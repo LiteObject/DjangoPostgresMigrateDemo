@@ -1,0 +1,19 @@
+[MASTER]
+# Exclude the virtual environment and any other non-project directories
+ignore=.venv,venv,env,migrations
+ignore-paths=^\.venv[\\/].*$
+
+# Note: pylint-django plugin is optional. If installed and on the Pylint path,
+# uncomment the following two lines:
+# load-plugins=pylint_django
+# (and add a [pylint_django] section with django-settings-module)
+
+[MESSAGES CONTROL]
+# E1101 – Django model managers (.objects) are added at runtime by the metaclass
+# E0401 – third-party packages may not be present in the linting environment
+disable=
+    E1101,
+    E0401
+
+[FORMAT]
+max-line-length=120
