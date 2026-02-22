@@ -21,6 +21,7 @@ This project is ideal for learning:
 ├── docker-compose.yml                 # PostgreSQL container config
 ├── .env.example                       # Environment variables template
 ├── .pylintrc                          # Lint configuration
+├── .gitignore                         # Git ignore rules
 │
 ├── migrate_demo/                      # Django project package
 │   ├── __init__.py
@@ -40,8 +41,7 @@ This project is ideal for learning:
     │   ├── 0002_add_stock_count.py   # Adds stock_count field
     │   ├── 0003_supplier.py          # Creates Supplier & adds FK
     │   └── 0004_seed_data.py         # Populates initial database records
-    ├── views.py                       # View functions (not used in this demo)
-    └── urls.py                        # App-level URL routing (not used)
+    └── tests.py                       # Unit tests
 ```
 
 ---
@@ -111,6 +111,15 @@ docker-compose ps
 python manage.py migrate
 ```
 
+### 7. Create a superuser (optional)
+
+To use the Django Admin interface:
+```bash
+python manage.py createsuperuser
+```
+
+Then start the development server with `python manage.py runserver` and visit http://127.0.0.1:8000/admin/.
+
 ---
 
 ## Understanding Django Migrations
@@ -149,6 +158,14 @@ A data migration that populates the database with initial records:
 - Creates sample Suppliers (TechCorp, WoodWorks)
 - Creates sample Products linked to the categories and suppliers
 
+**Why Data Migrations instead of Fixtures?**
+This project uses a Python-based Data Migration (`RunPython`) to seed the database rather than JSON/YAML fixtures (`loaddata`). This approach is often preferred because:
+1. **Automatic Execution:** Data is seeded automatically when running `python manage.py migrate`. You don't need a separate `loaddata` step.
+2. **Programmability:** You can use Python logic, loops, and variables to generate data dynamically.
+3. **Database Agnostic:** It relies on Django's ORM, avoiding database-specific quirks that sometimes affect raw SQL dumps.
+4. **Version Control:** Python code is easier to review in pull requests than large JSON files.
+5. **Rollbacks:** You can define a reverse function (like `reverse_seed_data`) to cleanly remove the seeded data if you roll back the migration.
+
 ---
 
 ## Migration Workflow
@@ -176,7 +193,7 @@ inventory
 # Apply only the first migration
 python manage.py migrate inventory 0001
 
-# Check status (0002, 0003 will show as [ ])
+# Check status (0002, 0003, 0004 will show as [ ])
 python manage.py showmigrations inventory
 
 # Apply the second migration
@@ -184,6 +201,9 @@ python manage.py migrate inventory 0002
 
 # Apply the third migration
 python manage.py migrate inventory 0003
+
+# Apply the fourth migration (seeds initial data)
+python manage.py migrate inventory 0004
 
 # Verify all are applied
 python manage.py showmigrations inventory
@@ -200,7 +220,7 @@ This applies all pending migrations in order.
 ### Roll back to a previous migration
 
 ```bash
-# Roll back to after migration 0001 (removes 0002 and 0003)
+# Roll back to after migration 0001 (removes 0002, 0003, and 0004)
 python manage.py migrate inventory 0001
 
 # Roll back all inventory migrations (drops all tables)
@@ -264,7 +284,7 @@ Example output:
 ```
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
-..7..
+...
 ----------------------------------------------------------------------
 Ran 3 tests in 0.002s
 
@@ -371,16 +391,16 @@ class Product(models.Model):
 python manage.py makemigrations inventory
 ```
 
-A new file like `0004_product_new_field.py` is created.
+A new file like `0005_product_new_field.py` is created.
 
 ### Review and apply
 
 ```bash
 # See what the migration does (optional, helps you understand)
-python manage.py sqlmigrate inventory 0004
+python manage.py sqlmigrate inventory 0005
 
 # Apply the migration
-python manage.py migrate inventory 0004
+python manage.py migrate inventory 0005
 ```
 
 ### Test your changes
@@ -399,8 +419,11 @@ python manage.py test inventory
 | [inventory/models.py](inventory/models.py) | Category, Supplier, Product definitions |
 | [inventory/admin.py](inventory/admin.py) | Admin interface configuration |
 | [inventory/migrations/](inventory/migrations/) | Migration files (version control for schema) |
+| [inventory/migrations/0004_seed_data.py](inventory/migrations/0004_seed_data.py) | Data migration that seeds initial records |
 | [requirements.txt](requirements.txt) | Python package dependencies |
 | [docker-compose.yml](docker-compose.yml) | PostgreSQL service definition |
+| [.env.example](.env.example) | Environment variables template |
+| [.gitignore](.gitignore) | Git ignore rules |
 
 ---
 
@@ -422,6 +445,6 @@ This project is provided as-is for educational purposes.
 ## Next Steps
 
 - Modify the migrations to add/remove fields and learn how Django tracks changes
-- Create custom migrations with data transformations
+- Create custom migrations with data transformations (see `0004_seed_data.py` for an example)
 - Explore Django's `sqlmigrate` command to see generated SQL
 - Deploy to a production database and practice safe migration strategies
