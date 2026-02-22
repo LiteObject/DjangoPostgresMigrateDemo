@@ -38,7 +38,8 @@ This project is ideal for learning:
     │   ├── __init__.py
     │   ├── 0001_initial.py           # Creates Category & Product
     │   ├── 0002_add_stock_count.py   # Adds stock_count field
-    │   └── 0003_supplier.py          # Creates Supplier & adds FK
+    │   ├── 0003_supplier.py          # Creates Supplier & adds FK
+    │   └── 0004_seed_data.py         # Populates initial database records
     ├── views.py                       # View functions (not used in this demo)
     └── urls.py                        # App-level URL routing (not used)
 ```
@@ -126,7 +127,7 @@ over time and applies them to your database.
 - **Forward**: Applying a migration to move *forward* in schema history
 - **Backward**: Rolling back a migration to move *backward* in schema history
 
-### The three migrations in this project
+### The four migrations in this project
 
 #### Migration 0001: Initial Schema
 Creates two models:
@@ -141,6 +142,12 @@ Adds a field to track stock:
 Introduces supplier management:
 - `Supplier` (id, name, contact_email, phone)
 - `Product.supplier_id` (ForeignKey to Supplier)
+
+#### Migration 0004: Seed Data
+A data migration that populates the database with initial records:
+- Creates sample Categories (Electronics, Furniture)
+- Creates sample Suppliers (TechCorp, WoodWorks)
+- Creates sample Products linked to the categories and suppliers
 
 ---
 
@@ -158,6 +165,7 @@ inventory
  [X] 0001_initial
  [X] 0002_add_stock_count
  [X] 0003_supplier
+ [X] 0004_seed_data
 ```
 
 `[X]` = applied, `[ ]` = not yet applied
